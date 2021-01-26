@@ -1,7 +1,7 @@
 # cmd.py
 #
-# This module is part of the Linux_Commands module  and is released under
-# the BSD License: http://www.opensource.org/licenses/bsd-license.php
+# This module is part of linux_commands/commands module and is released under
+# the GNU Public License: https://en.wikipedia.org/wiki/GNU_General_Public_License
 
 from contextlib import contextmanager
 import io
@@ -61,6 +61,7 @@ CREATE_NO_WINDOW = 0x08000000
 PROC_CREATIONFLAGS = (CREATE_NO_WINDOW | subprocess.CREATE_NEW_PROCESS_GROUP
                       if is_win else 0)
 
+
 class Cmd(LazyMixin):
     """
     The Cmd class manages communication with the Linux binaries.
@@ -72,7 +73,7 @@ class Cmd(LazyMixin):
      rval = c.apply()        # calls 'terraform apply' program
 
     ``Debugging``
-        Set the CMD_PYTHON_TRACE environment variable print each invocation
+        Set the ENV_CMD_TRACE environment variable print each invocation
         of the command to stdout.
         Set its value to 'full' to see details about the returned values.
     """
@@ -86,8 +87,8 @@ class Cmd(LazyMixin):
         """A convenience method as it allows to call the command as if it was
         an object.
         :return: Callable object that will execute call _call_process with your arguments."""
-        if name[0] == '___':
-            return lambda *args, **kwargs: self._call_process(dashify(name), *args, **kwargs)
+        if name.startswith('___'):
+            return lambda *args, **kwargs: self._call_process((name), *args, **kwargs)
         if name[0] != '_':
             return lambda *args, **kwargs: self._call_process(name, *args, **kwargs)
         return LazyMixin.__getattr__(self, name)
@@ -102,7 +103,7 @@ class Cmd(LazyMixin):
         to_slots(self, d, excluded=self._excluded_)
 
     # Enables debugging of CmdPython's cmd commands
-    CMD_PYTHON_TRACE = os.environ.get("CMD_PYTHON_TRACE", False)
+    ENV_CMD_TRACE = os.environ.get("ENV_CMD_TRACE", False)
 
     # If True, a shell will be used when executing cmd commands.
     # This should only be desirable on Windows, see https://cmdhub.com/cmdpython-developers/CmdPython/pull/126
@@ -111,7 +112,7 @@ class Cmd(LazyMixin):
     USE_SHELL = False
 
     # Provide the full path to the cmd executable. Otherwise it assumes cmd is in the path
-    _refresh_env_var = "CMD_PYTHON_REFRESH"
+    _refresh_env_var = "ENV_CMD_REFRESH"
 
     def __init__(self, cmd, working_dir=None, path=None):
         """Initialize this instance with:
@@ -187,7 +188,7 @@ class Cmd(LazyMixin):
             """)
 
             # Determine what the user wants to happen during the initial
-            # refresh we expect CMD_PYTHON_REFRESH to either be unset or
+            # refresh we expect ENV_CMD_REFRESH to either be unset or
             # be one of the following values:
             #   0|q|quiet|s|silence
             #   1|w|warn|warning
@@ -236,8 +237,7 @@ class Cmd(LazyMixin):
         A context manager around the above ``update_environment`` method to restore the
         environment back to its previous state after operation.
         ``Examples``::
-            with self.custom_environment(CMD_SSH='/bin/ssh_wrapper'):
-                repo.remotes.origin.fetch()
+            with self.custom_environment(CMD_SSH='/usr/local/bin/wrapper'):
         :param kwargs: see update_environment
         """
         old_env = self.update_environment(**kwargs)
@@ -361,6 +361,7 @@ class Cmd(LazyMixin):
 
         call.append(dashify(method))
         call.extend(args)
+        print(call)
 
         return self.execute(call, **exec_kwargs)
         """
@@ -499,7 +500,7 @@ class Cmd(LazyMixin):
         :note:
            If you add additional keyword arguments to the signature of this method,
            you must update the execute_kwargs tuple housed in this module."""
-        if self.CMD_PYTHON_TRACE and (self.CMD_PYTHON_TRACE != 'full' or as_process):
+        if self.ENV_CMD_TRACE and (self.ENV_CMD_TRACE != 'full' or as_process):
             log.info(' '.join(command))
 
         # Allow the user to have the command executed in their working dir.
@@ -642,7 +643,7 @@ class Cmd(LazyMixin):
             proc.stdout.close()
             proc.stderr.close()
 
-        if self.CMD_PYTHON_TRACE == 'full':
+        if self.ENV_CMD_TRACE == 'full':
             cmdstr = " ".join(command)
 
             def as_text(stdout_value):
@@ -668,11 +669,11 @@ class Cmd(LazyMixin):
                 return (status, stdout_value, safe_decode(stderr_value))
             else:
                 return stdout_value
-
-        if QuietError:
-            pass
         else:
-            raise CmdCommandError(command, status, stderr_value, stdout_value)
+            if QuietError:
+                pass
+            else:
+                raise CmdCommandError(command, status, stderr_value, stdout_value)
 
     def environment(self):
         return self._environment

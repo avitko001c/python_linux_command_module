@@ -1,17 +1,18 @@
-# exc.py
-# Copyright (C) 2008, 2009 Michael Trier (mtrier@gmail.com) and contributors
+# exceptions.py
 #
-# This module is part of CmdPython and is released under
-# the BSD License: http://www.opensource.org/licenses/bsd-license.php
+# This module is part of linux_commands/commands module and is released under
+# the GNU Public License: https://en.wikipedia.org/wiki/GNU_General_Public_License
+
 """ Module containing all exceptions thrown throughout the cmd package, """
 
-from gitdb.exc import *     # NOQA @UnusedWildImport skipcq: PYL-W0401, PYL-W0614
 from commands.utils.cmd_utils import safe_decode
 
+class QuietError():
+    """ Error class that will just be Quiet """
+    pass
 
 class CmdError(Exception):
     """ Base class for all package exceptions """
-
 
 class NoSuchPathError(CmdError, OSError):
     """ Thrown if a path could not be access by the system. """
@@ -71,7 +72,6 @@ class CommandNotFound(CommandError):
     def __init__(self, command, cause):
         super(CmdCommandNotFound, self).__init__(command, cause)
         self._msg = "Cmd('%s') not found%s"
-
 
 class CmdCommandError(CommandError):
     """ Thrown if execution of the cmd command fails with non-zero status code. """

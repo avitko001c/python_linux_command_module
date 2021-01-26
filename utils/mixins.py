@@ -1,3 +1,8 @@
+# mixins.py
+#
+# This module is part of linux_commands/commands module and is released under
+# the BSD License: http://www.opensource.org/licenses/bsd-license.php
+
 class LazyMixin(object):
 
     """
@@ -9,7 +14,11 @@ class LazyMixin(object):
 
     __slots__ = tuple()
 
-    def __init__(self, cmd, working_dir=None, path=None):
+    def __init__(self):
+        """
+        This method should be overridden in the derived class. It should set self, do nothing,
+        do everything, or call your subclasses.
+        """
         pass
 
     def __getattr__(self, attr):
@@ -29,7 +38,7 @@ class LazyMixin(object):
         and cached. Do nothing if you do not know the attribute or call your subclass
 
         The derived class may create as many additional attributes as it deems
-        necessary in case a git command returns more information than represented
+        necessary in case a command returns more information than represented
         in the single attribute.
         """
         pass

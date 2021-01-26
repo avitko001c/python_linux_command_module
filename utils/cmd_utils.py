@@ -1,3 +1,8 @@
+# cmd_utils.py
+#
+# This module is part of linux_commands/commands module and is released under
+# the BSD License: http://www.opensource.org/licenses/bsd-license.php
+
 import binascii
 import os
 import mmap
@@ -14,6 +19,7 @@ from smmap import (
 )
 
 defenc = sys.getfilesystemencoding()
+qsort = lambda L: [] if L==[] else qsort([x for x in L[1:] if x< L[0]]) + L[0:1] + qsort([x for x in L[1:] if x>=L[0]])
 
 def expand_path(p, expand_vars=True):
     try:

@@ -30,7 +30,7 @@ import getopt
 import builtins
 import collections.abc as cabc
 
-r"""Find the full path to commands.
+"""Find the full path to commands.
 
 which(command, path=None, verbose=0, exts=None)
     Return the full path to the first match of the given command on the
@@ -55,38 +55,6 @@ is returned for each match. The latter element is a textual description
 of where the match was found. For example:
     from PATH element 0
     from HKLM\SOFTWARE\...\perl.exe
-"""
-
-_cmdlnUsage = """
-    Show the full path of commands.
-
-    Usage:
-        which [<options>...] [<command-name>...]
-
-    Options:
-        -h, --help      Print this help and exit.
-        -V, --version   Print the version info and exit.
-
-        -a, --all       Print *all* matching paths.
-        -v, --verbose   Print out how matches were located and
-                        show near misses on stderr.
-        -q, --quiet     Just print out matches. I.e., do not print out
-                        near misses.
-
-        -p <altpath>, --path=<altpath>
-                        An alternative path (list of directories) may
-                        be specified for searching.
-        -e <exts>, --exts=<exts>
-                        Specify a list of extensions to consider instead
-                        of the usual list (';'-separate list, Windows
-                        only).
-
-    Show the full path to the program that would be run for each given
-    command name, if any. Which, like GNU's which, returns the number of
-    failed arguments, or -1 when no <command-name> was given.
-
-    Near misses include duplicates, non-regular files and (on Un*x)
-    files without executable access.
 """
 
 __version_info__ = (1, 2, 0)
